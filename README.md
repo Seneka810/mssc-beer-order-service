@@ -2,4 +2,4 @@
 
 # MSSC Beer Order Service
 
-Deconstruct the monolit beer-service part 1
+Deconstruct the monolith beer-service part 1
