@@ -13,6 +13,7 @@ import org.springframework.statemachine.state.State;
 import org.springframework.statemachine.support.StateMachineInterceptorAdapter;
 import org.springframework.statemachine.transition.Transition;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class BeerOrderStateChangeInterceptor extends StateMachineInterceptorAdap
         this.beerOrderRepository = beerOrderRepository;
     }
 
+    @Transactional
     @Override
     public void preStateChange(State<BeerOrderStatusEnum, BeerOrderEventEnum> state,
                                Message<BeerOrderEventEnum> message,
@@ -41,9 +43,12 @@ public class BeerOrderStateChangeInterceptor extends StateMachineInterceptorAdap
                 .ifPresent(orderId -> {
                     log.debug("Saving state for order id: " + orderId + " Status: " + state.getId());
 
-                    BeerOrder beerOrder = beerOrderRepository.getOne(UUID.fromString(orderId));
-                    beerOrder.setOrderStatus(state.getId());
-                    beerOrderRepository.saveAndFlush(beerOrder);
+                    Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(UUID.fromString(orderId));
+                    log.info("found record: {}", beerOrderOptional.get().getBeerOrderLines().toString());
+                    beerOrderOptional.ifPresentOrElse(beerOrder -> {
+                        beerOrder.setOrderStatus(state.getId());
+                        beerOrderRepository.saveAndFlush(beerOrder);
+                    }, () -> log.error("Beer order id is null."));
                 });
     }
 }
