@@ -15,7 +15,7 @@ public class JmsConfig {
     public static final String ALLOCATE_ORDER_QUEUE = "allocate-order";
     public static final String ALLOCATE_ORDER_RESPONSE_QUEUE = "allocate-order-response";
 
-    @Bean
+    @Bean // Serialize message content to json using TextMessage
     public MessageConverter jacksonJmsMessageConverter(ObjectMapper objectMapper) {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
         converter.setTargetType(MessageType.TEXT);
@@ -23,9 +23,4 @@ public class JmsConfig {
         converter.setObjectMapper(objectMapper);
         return converter;
     }
-
-//    @Bean
-//    public StateMachineFactory stateMachineFactory() throws InstantiationException, IllegalAccessException {
-//        return StateMachineFactory.class.newInstance();
-//    }
 }

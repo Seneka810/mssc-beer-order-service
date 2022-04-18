@@ -37,7 +37,6 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 public class BeerOrder extends BaseEntity {
-
     @Builder
     public BeerOrder(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate, String customerRef, Customer customer,
                      Set<BeerOrderLine> beerOrderLines, BeerOrderStatusEnum orderStatus,
@@ -57,6 +56,7 @@ public class BeerOrder extends BaseEntity {
 
     @OneToMany(mappedBy = "beerOrder", cascade = CascadeType.ALL)
     @Fetch(FetchMode.JOIN)
+    @ToString.Exclude
     private Set<BeerOrderLine> beerOrderLines;
 
     private BeerOrderStatusEnum orderStatus = BeerOrderStatusEnum.NEW;
