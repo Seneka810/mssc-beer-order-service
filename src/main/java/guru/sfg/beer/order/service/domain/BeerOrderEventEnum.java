@@ -9,6 +9,5 @@ public enum BeerOrderEventEnum {
     ALLOCATION_NO_INVENTORY,
     ALLOCATION_FAILED,
     BEER_ORDER_PICKED_UP,
-
     CANCEL_ORDER
 }
