@@ -1,0 +1,23 @@
+FROM openjdk:11-jre-slim as builder
+WORKDIR application
+COPY maven/${project.build.finalName}.jar ${project.build.finalName}.jar
+RUN java -Djarmode=layertools -jar ${project.build.finalName}.jar extract
+
+FROM openjdk:11-jre-slim
+LABEL PROJECT_NAME=${project.artifactId} \
+      PROJECT=${project.id}
+
+RUN addgroup brewery && adduser --ingroup brewery --disabled-password beerservice
+USER beerservice
+
+EXPOSE 8081
+
+WORKDIR application
+COPY --from=builder application/dependencies/ ./
+RUN true
+COPY --from=builder application/spring-boot-loader/ ./
+RUN true
+COPY --from=builder application/snapshot-dependencies/ ./
+RUN true
+COPY --from=builder application/application/ ./
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "org.springframework.boot.loader.JarLauncher"]
